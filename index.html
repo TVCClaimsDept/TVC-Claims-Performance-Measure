@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Texas Veterans Commission (TVC) | ABEST Performance Dashboard (FY 2015-2020)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Cinzel', 'serif'],
+          },
+          colors: {
+            tvc: {
+              navy: '#0B2545',
+              navyDark: '#07172B',
+              slate: '#134074',
+              accent: '#C59B27',
+              accentHover: '#E0B034',
+              softBg: '#F8FAFC'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Clean custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    .custom-gradient {
+      background: linear-gradient(135deg, #0B2545 0%, #134074 55%, #07172B 100%);
+    }
+    body {
+      background-image:
+        radial-gradient(ellipse at 10% 0%, rgba(19, 64, 116, 0.09), transparent 38%),
+        radial-gradient(ellipse at 94% 14%, rgba(197, 155, 39, 0.07), transparent 32%),
+        linear-gradient(rgba(11, 37, 69, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(11, 37, 69, 0.025) 1px, transparent 1px);
+      background-size: auto, auto, 40px 40px, 40px 40px;
+      background-attachment: fixed;
+    }
+    html.dark body {
+      background-image:
+        radial-gradient(ellipse at 10% 0%, rgba(19, 64, 116, 0.2), transparent 38%),
+        radial-gradient(ellipse at 94% 14%, rgba(197, 155, 39, 0.06), transparent 32%),
+        linear-gradient(rgba(148, 163, 184, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.025) 1px, transparent 1px);
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; color: black !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- Header Banner -->
+  <header class="custom-gradient text-white shadow-xl border-b border-amber-500/30 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Brand & Seal -->
+      <div class="flex items-center space-x-3.5">
+        <img src="../TVC%20LOGO%20STACKED_LBG.png" alt="Texas Veterans Commission logo" class="w-14 h-14 object-contain shrink-0">
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs uppercase tracking-widest text-amber-400 font-semibold font-serif">State of Texas</span>
+            <span class="inline-block w-1 h-1 rounded-full bg-amber-400"></span>
+            <span class="text-xs uppercase tracking-wider text-slate-300">ABEST Performance System</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            Texas Veterans Commission (TVC)
+            <span class="text-xs bg-amber-500/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded-full font-mono">Claims Department</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Action Group -->
+      <div class="flex items-center space-x-2.5 sm:space-x-3 no-print">
+        <button id="themeToggleBtn" type="button" title="Toggle Dark/Light Mode" class="p-2 sm:px-3 sm:py-2 text-sm bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/15 transition flex items-center gap-2">
+          <i class="fa-solid fa-moon text-amber-300" id="themeIcon"></i>
+          <span class="hidden sm:inline text-xs font-medium" id="themeLabel">Dark</span>
+        </button>
+
+        <button id="exportCsvBtn" type="button" title="Export Current Filtered Data to CSV" class="p-2 sm:px-3 sm:py-2 text-sm bg-amber-500/90 hover:bg-amber-400 text-slate-950 font-semibold rounded-lg shadow-sm transition flex items-center gap-2">
+          <i class="fa-solid fa-file-csv text-base"></i>
+          <span class="hidden sm:inline text-xs">Export CSV</span>
+        </button>
+
+        <button onclick="window.print()" type="button" title="Print Executive Report" class="p-2 sm:px-3 sm:py-2 text-sm bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/15 transition flex items-center gap-2">
+          <i class="fa-solid fa-print"></i>
+          <span class="hidden sm:inline text-xs">Print</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Top Metadata Bar -->
+  <section class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-2.5 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+      <div class="flex items-center flex-wrap gap-x-4 gap-y-1">
+        <span><i class="fa-solid fa-calendar-check text-amber-500 mr-1.5"></i><strong>Audited Reporting Span:</strong> FY 2015 – FY 2026 (83rd - 89th Legislative Sessions)</span>
+        <span><i class="fa-solid fa-database text-blue-500 mr-1.5"></i><strong>LBB ABEST Official Submissions & LAR Updates</strong></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> 12-Year State Longitudinal Archive
+        </span>
+        <span class="text-slate-400">|</span>
+        <span id="quickStatsSummary" class="font-medium text-slate-700 dark:text-slate-300">50+ ABEST Performance Records</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-grow w-full">
+
+    <!-- KPI Summary Grid (Dynamically Computed from active filter selection) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="kpiSummaryRow">
+      <!-- Injected via JavaScript -->
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        
+        <!-- Search Input with Clear Button -->
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input 
+            type="text" 
+            id="globalSearchInput" 
+            placeholder="Search measures, strategies, codes, or keywords (e.g., 'COVID', 'AMA', 'Strike Force', 'Disability')..."
+            class="w-full pl-10 pr-10 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 transition placeholder-slate-400"
+          >
+          <button id="clearSearchBtn" type="button" title="Clear text" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hidden">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="flex items-center gap-2 self-end lg:self-auto">
+          <button id="resetFiltersBtn" type="button" class="text-xs px-3.5 py-2 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-300 dark:border-slate-700 rounded-lg hover:border-blue-400 transition flex items-center gap-1.5 bg-slate-100/70 dark:bg-slate-800 font-medium">
+            <i class="fa-solid fa-rotate-left"></i> Reset All Filters
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Filter Dropdowns Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+        
+        <!-- Filter 1: Fiscal Year -->
+        <div>
+          <label for="fyFilter" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Fiscal Year (FY)</label>
+          <select id="fyFilter" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none transition">
+            <option value="ALL">All Fiscal Years (2015-2026)</option>
+            <option value="2026">FY 2026 (PACT Act / Recalibrated)</option>
+            <option value="2025">FY 2025</option>
+            <option value="2024">FY 2024</option>
+            <option value="2023">FY 2023 (Form vs Issue Shift)</option>
+            <option value="2022">FY 2022</option>
+            <option value="2021">FY 2021 (COVID Reconstitution)</option>
+            <option value="2020">FY 2020 (86th Leg.)</option>
+            <option value="2019">FY 2019 (85th Leg.)</option>
+            <option value="2018">FY 2018 (85th Leg.)</option>
+            <option value="2017">FY 2017 (84th Leg.)</option>
+            <option value="2016">FY 2016 (84th Leg.)</option>
+            <option value="2015">FY 2015 (83rd Leg.)</option>
+          </select>
+        </div>
+
+        <!-- Filter 2: Strategy / Category -->
+        <div>
+          <label for="strategyFilter" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Strategy / Objective</label>
+          <select id="strategyFilter" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none transition">
+            <option value="ALL">All Strategies / Programs</option>
+            <option value="1-1-1">1-1-1 Claims Representation & Counseling</option>
+            <option value="1-1">1-1 Maintain Veterans' Awards</option>
+            <option value="1-1-2">1-1-2 Employment Services</option>
+          </select>
+        </div>
+
+        <!-- Filter 3: Measure Type -->
+        <div>
+          <label for="typeFilter" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Measure Classification</label>
+          <select id="typeFilter" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none transition">
+            <option value="ALL">All Classifications</option>
+            <option value="Output">Output Measures</option>
+            <option value="Outcome">Outcome Measures</option>
+            <option value="Efficiency">Efficiency Measures</option>
+          </select>
+        </div>
+
+        <!-- Filter 4: Performance Status -->
+        <div>
+          <label for="statusFilter" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Performance Status</label>
+          <select id="statusFilter" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-medium focus:ring-2 focus:ring-blue-600 focus:outline-none transition">
+            <option value="ALL">All Performance Statuses</option>
+            <option value="EXCEEDED">Exceeded Target (> 105%)</option>
+            <option value="MET">On Target (95% - 105%)</option>
+            <option value="BELOW">Below Target (< 95%)</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Quick Preset Filter Tags -->
+      <div class="flex items-center gap-2 flex-wrap pt-1 text-xs">
+        <span class="text-slate-400 text-[11px] font-semibold mr-1"><i class="fa-solid fa-bolt text-amber-500 mr-1"></i>Quick Presets:</span>
+        <button type="button" class="preset-tag px-2.5 py-1 rounded-full bg-slate-100 hover:bg-blue-100 dark:bg-slate-800 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition text-[11px] font-medium border border-slate-200 dark:border-slate-700" data-type="query" data-value="PACT">PACT Act Surge</button>
+        <button type="button" class="preset-tag px-2.5 py-1 rounded-full bg-slate-100 hover:bg-blue-100 dark:bg-slate-800 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition text-[11px] font-medium border border-slate-200 dark:border-slate-700" data-type="query" data-value="Monetary Awards">Monetary Awards ($ Billions)</button>
+        <button type="button" class="preset-tag px-2.5 py-1 rounded-full bg-slate-100 hover:bg-blue-100 dark:bg-slate-800 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition text-[11px] font-medium border border-slate-200 dark:border-slate-700" data-type="query" data-value="Active VA Benefit Cases">Active Caseload Growth</button>
+        <button type="button" class="preset-tag px-2.5 py-1 rounded-full bg-slate-100 hover:bg-blue-100 dark:bg-slate-800 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition text-[11px] font-medium border border-slate-200 dark:border-slate-700" data-type="query" data-value="COVID">COVID Disruption & Reconstitution</button>
+        <button type="button" class="preset-tag px-2.5 py-1 rounded-full bg-slate-100 hover:bg-blue-100 dark:bg-slate-800 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-300 transition text-[11px] font-medium border border-slate-200 dark:border-slate-700" data-type="status" data-value="EXCEEDED">Show Only Exceeded</button>
+      </div>
+    </div>
+
+    <!-- Analytics & Chart Visualizations -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Chart 1: Longitudinal Multi-Year Trends (2 cols) -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm lg:col-span-2 flex flex-col justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-chart-line text-blue-600"></i>
+              Longitudinal Performance Trends (FY 2015 – FY 2026)
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400" id="longitudinalChartSubtitle">Target vs Actual Performance Across 12 Fiscal Years</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="trendMetricSelector" class="text-xs px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-medium text-slate-700 dark:text-slate-200 focus:outline-none">
+              <option value="ACTIVE_CASES">Active VA Benefit Cases (234K to 366K+)</option>
+              <option value="MONETARY_AWARDS">Monetary Awards to SC Vets ($ Millions to $9.45B)</option>
+              <option value="CLAIMS">Claims Filed for Disabled Vets (Counting Shift to FY26 Recalibration)</option>
+              <option value="APPEALS">VA Decisions Appealed (AMA Trend)</option>
+              <option value="STRIKE_FORCE">Strike Force Team File & Decision Reviews</option>
+              <option value="ALL_VARIANCE">Attainment % Comparison (Key Measures)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-4 relative h-72 sm:h-80 w-full">
+          <canvas id="longitudinalChart"></canvas>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center justify-between gap-2">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-info text-amber-500"></i> Click legend buttons to toggle Target vs Actual lines.</span>
+          <span class="font-mono text-[11px] text-blue-600 dark:text-blue-400" id="chartDataCountIndicator">Showing trends for 12 Fiscal Years (2015–2026)</span>
+        </div>
+      </div>
+
+      <!-- Chart 2: Quarterly Trajectory & Composition Analysis (1 col) -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-chart-column text-amber-500"></i>
+              Quarterly Trajectory
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400" id="quarterlySubTitle">Claims Filed: FY 2026 by Quarter</p>
+          </div>
+          <div>
+            <select id="quarterlyYearSelect" class="text-xs px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-medium text-slate-700 dark:text-slate-200 focus:outline-none">
+              <option value="2026">FY 2026</option>
+              <option value="2025">FY 2025</option>
+              <option value="2024">FY 2024</option>
+              <option value="2023">FY 2023</option>
+              <option value="2022">FY 2022</option>
+              <option value="2021">FY 2021</option>
+              <option value="2020">FY 2020</option>
+              <option value="2019">FY 2019</option>
+              <option value="2018">FY 2018</option>
+              <option value="2017">FY 2017</option>
+              <option value="2016">FY 2016</option>
+              <option value="2015">FY 2015</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-4 relative h-64 sm:h-72 w-full flex items-center justify-center">
+          <canvas id="quarterlyChart"></canvas>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+          <div class="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-amber-900 dark:text-amber-300" id="quarterlyDynamicInsight">
+            <!-- Dynamic Quarterly Context -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Interactive Data Table Container -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+      
+      <!-- Table Header & Summary -->
+      <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/70 dark:bg-slate-800/30">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-tvc-slate text-white flex items-center justify-center shadow-sm">
+            <i class="fa-solid fa-table-list text-sm"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-slate-900 dark:text-white">Performance Measure Registry & Official ABEST Details</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400" id="tableFilterSummary">Showing matching records</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-2 text-xs">
+          <span class="text-slate-500 dark:text-slate-400 font-medium">Sort by:</span>
+          <select id="tableSortSelect" class="px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md font-medium text-slate-700 dark:text-slate-300 focus:outline-none">
+            <option value="year-desc">FY (Newest First)</option>
+            <option value="year-asc">FY (Oldest First)</option>
+            <option value="percent-desc">% Target (Highest First)</option>
+            <option value="percent-asc">% Target (Lowest First)</option>
+            <option value="name-asc">Measure Name (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table Scroll wrapper -->
+      <div class="overflow-x-auto w-full">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-100/90 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-700">
+              <th class="py-3 px-3.5 w-16 text-center">FY</th>
+              <th class="py-3 px-3.5 w-24">Strategy</th>
+              <th class="py-3 px-3.5">Measure Name</th>
+              <th class="py-3 px-3.5 w-20 text-center">Type</th>
+              <th class="py-3 px-3.5 text-right w-24">Target</th>
+              <th class="py-3 px-2 text-center w-44">Quarterly Actuals (Q1 - Q4)</th>
+              <th class="py-3 px-3.5 text-right w-28">Actual (Final)</th>
+              <th class="py-3 px-3.5 text-center w-24">% Attained</th>
+              <th class="py-3 px-3.5 text-center w-28">Status</th>
+              <th class="py-3 px-3.5 text-center w-24 no-print">ABEST Details</th>
+            </tr>
+          </thead>
+          <tbody id="performanceTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 font-normal">
+            <!-- Table Rows Injected Dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State Indicator -->
+      <div id="tableEmptyState" class="hidden py-12 text-center">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 mb-3 text-xl">
+          <i class="fa-solid fa-filter-circle-xmark"></i>
+        </div>
+        <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">No matching performance measures found</p>
+        <p class="text-xs text-slate-400 mt-1">Adjust search query or broaden your filter selections.</p>
+        <button id="emptyStateResetBtn" type="button" class="mt-3 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition">
+          Clear Filters
+        </button>
+      </div>
+
+      <!-- Table Footer / Legend -->
+      <div class="p-3.5 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+        <div>
+          Showing <span id="visibleRowCount" class="font-bold text-slate-700 dark:text-slate-200">0</span> of <span id="totalRowCount">0</span> measures
+        </div>
+        <div class="flex items-center gap-4 flex-wrap">
+          <span class="inline-flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1.5"></span> Exceeded (> 105%)</span>
+          <span class="inline-flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-1.5"></span> On Target (95% - 105%)</span>
+          <span class="inline-flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 mr-1.5"></span> Below Target (< 95%)</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Official Variance & Audit Findings Context -->
+    <div class="bg-gradient-to-r from-slate-900 via-tvc-navy to-slate-900 text-white rounded-xl p-6 shadow-md border border-slate-700/50">
+      <h3 class="text-base font-bold text-amber-400 flex items-center gap-2 mb-3">
+        <i class="fa-solid fa-magnifying-glass-chart"></i>
+        Official Legislative ABEST Findings & Major Policy Inflections (FY 2015 - FY 2026)
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs leading-relaxed text-slate-200">
+        <div class="p-3.5 bg-white/5 rounded-lg border border-white/10">
+          <h4 class="font-semibold text-white text-sm mb-1.5 flex items-center gap-1.5 text-amber-300">
+            <i class="fa-solid fa-shield-halved"></i> PACT Act & $9.45B Expansion
+          </h4>
+          <p>
+            Passed in August 2022, the federal PACT Act expanded presumptive conditions, pushing Active Caseload to <strong>366,854</strong> and Service-Connected Monetary Awards to a record <strong>$9,445.27M ($9.45 Billion)</strong> in FY 2026 (188.9% of target).
+          </p>
+        </div>
+        <div class="p-3.5 bg-white/5 rounded-lg border border-white/10">
+          <h4 class="font-semibold text-white text-sm mb-1.5 flex items-center gap-1.5 text-blue-300">
+            <i class="fa-solid fa-file-pen"></i> Form vs. Issue Counting Shift
+          </h4>
+          <p>
+            In FY22–FY23, TVC switched from counting multiple disability <em>issues</em> per claim to counting single claim <em>forms</em> in VetPro. This created an apparent paper drop to ~45k–49k until the Legislature recalibrated the FY26 target from 126k down to <strong>45,000</strong> (achieving 119.9%).
+          </p>
+        </div>
+        <div class="p-3.5 bg-white/5 rounded-lg border border-white/10">
+          <h4 class="font-semibold text-white text-sm mb-1.5 flex items-center gap-1.5 text-purple-300">
+            <i class="fa-solid fa-arrows-split-up-and-left"></i> Appeals Modernization (AMA)
+          </h4>
+          <p>
+            Following the 2017 AMA reforms, appeals shifted to Supplemental Claims and Higher-Level Reviews (Forms 10182, 20-0995, 20-0996), reaching 18,590 in FY23 before stabilizing as TVC focused on high first-time approval quality.
+          </p>
+        </div>
+        <div class="p-3.5 bg-white/5 rounded-lg border border-white/10">
+          <h4 class="font-semibold text-white text-sm mb-1.5 flex items-center gap-1.5 text-emerald-300">
+            <i class="fa-solid fa-briefcase"></i> Strike Force Pivot to QC
+          </h4>
+          <p>
+            The Strike Force evolved from "Beating the Backlog" to Post-Decision Quality Assurance reviews (with a daily standard of 7 reviews per specialist). The FY26 target was recalibrated to 5,000 reviews, with actuals reaching <strong>17,655 (353.1%)</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ABEST Variance Detail Modal Dialog -->
+  <div id="explanationModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transition-all p-6">
+      
+      <div class="flex items-start justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <span id="modalStrategyBadge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 font-semibold">1-1-1 CLAIMS REPRESENTATION</span>
+          <h3 id="modalTitle" class="text-lg font-bold text-slate-900 dark:text-white mt-1">Official ABEST Variance Explanation</h3>
+          <p id="modalFiscalYear" class="text-xs text-slate-500 dark:text-slate-400">Fiscal Year 2020 | Agency 403</p>
+        </div>
+        <button id="closeModalBtn" type="button" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4 text-xs">
+        <!-- Target vs Actual Summary Block -->
+        <div class="grid grid-cols-3 gap-2 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div>
+            <span class="block text-slate-400 text-[11px]">Legislative Target</span>
+            <span id="modalTargetVal" class="text-sm font-bold text-slate-800 dark:text-slate-100">--</span>
+          </div>
+          <div>
+            <span class="block text-slate-400 text-[11px]">Final Actual (YTD)</span>
+            <span id="modalActualVal" class="text-sm font-bold text-slate-800 dark:text-slate-100">--</span>
+          </div>
+          <div>
+            <span class="block text-slate-400 text-[11px]">% of Annual Target</span>
+            <span id="modalPercentVal" class="text-sm font-bold text-slate-800 dark:text-slate-100">--</span>
+          </div>
+        </div>
+
+        <!-- Quarterly progression -->
+        <div id="modalQuarterlySection" class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg">
+          <h4 class="font-semibold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-chart-column text-blue-500"></i> Quarterly Cumulative Progression:
+          </h4>
+          <div id="modalQuartersGrid" class="grid grid-cols-4 gap-2 text-center font-mono">
+            <!-- Quarters populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Official ABEST Explanation -->
+        <div>
+          <h4 class="font-semibold text-slate-800 dark:text-slate-200 mb-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-quote-left text-amber-500"></i> Official Legislative Variance & Audit Explanation:
+          </h4>
+          <div id="modalExplanationContent" class="p-3.5 rounded-lg bg-amber-50/70 dark:bg-slate-800 border-l-4 border-amber-500 text-slate-700 dark:text-slate-300 leading-relaxed italic text-xs whitespace-pre-line">
+            No explanation recorded.
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+        <button id="modalDismissBtn" type="button" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition">
+          Close Window
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 mt-8 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+      <div>
+        <span>Texas Veterans Commission (TVC) • Automated Budget and Evaluation System of Texas</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>Legislative Sessions: 83rd, 84th, 85th, 86th</span>
+        <span>•</span>
+        <span>Agency Code 403</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic & Certified Dataset -->
+  <script>
+    /* ====================================================================
+       1. COMPLETE DATASET EXTRACTED DIRECTLY FROM ABEST PDF (FY15 - FY26)
+       ==================================================================== */
+    const rawPerformanceData = [
+      // ==================================================================
+      // --- FY 2026 ---
+      // ==================================================================
+      {
+        id: "awards-sc-2026",
+        fy: 2026,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Monetary Awards w/ SC Disabilities ($ Millions)",
+        type: "Outcome",
+        target: 5000.00,
+        actual: 9445.27,
+        percent: 188.90,
+        status: "EXCEEDED",
+        quarters: { q1: null, q2: null, q3: null, q4: 9445.27 },
+        explanation: "Legislative changes (PACT Act) increased eligibility for compensation, causing an increased and consistent level of awards paid. The addition of new personnel (FTEs), including after-hours staff, contributed to nearly reaching $10 Billion ($9.445B) in annual awards.",
+        tags: ["awards", "pact act", "monetary", "service connected", "outcome", "1-1-1"]
+      },
+      {
+        id: "awards-wartime-2026",
+        fy: 2026,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 2,
+        measureName: "Monetary Awards to Totally Disabled Wartime Vets ($ Millions)",
+        type: "Outcome",
+        target: 75.00,
+        actual: 55.39,
+        percent: 73.90,
+        status: "BELOW",
+        quarters: { q1: null, q2: null, q3: null, q4: 55.39 },
+        explanation: "Federal legislative changes increased eligibility for compensation, thus decreasing the number of pension awards to disabled wartime veterans. Additionally, a declining population of WWII, Korea, and Vietnam era generations has contributed to a decrease in this award.",
+        tags: ["wartime", "pension", "awards", "demographics", "outcome", "1-1-1"]
+      },
+      {
+        id: "awards-survivors-2026",
+        fy: 2026,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 3,
+        measureName: "Monetary Awards for Survivors/Orphans ($ Millions)",
+        type: "Outcome",
+        target: 3000.00, // Noted error in target (meant 300)
+        actual: 410.20,
+        percent: 13.70, // 136.7% if evaluated against 300M target
+        status: "BELOW",
+        quarters: { q1: null, q2: null, q3: null, q4: 410.20 },
+        explanation: "This target was erroneously input into ABEST as 3000 (in millions of dollars). The intended target was 300 (in millions). If evaluated against 300M, TVC achieved 136.7%. Growth driven by presumptive awards for Vietnam and Gulf War era veterans.",
+        tags: ["survivors", "orphans", "dic", "abest error", "target adjustment", "outcome", "1-1-1"]
+      },
+      {
+        id: "claims-2026",
+        fy: 2026,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed and Fully-Developed for Disabled Vets",
+        type: "Output",
+        target: 45000, // Recalibrated target
+        actual: 53964,
+        percent: 119.90,
+        status: "EXCEEDED",
+        quarters: { q1: 13178, q2: 12619, q3: 13721, q4: 14446 },
+        explanation: "Legislative target was properly recalibrated to 45,000 to match form-counting methodology. Improvements in appointment scheduling, expanded after-hours availability for working veterans, increased access via new office locations, and daily service goals drove performance to 119.9%.",
+        tags: ["claims", "recalibrated target", "pact act", "expanded access", "output", "1-1-1"]
+      },
+      {
+        id: "active-cases-2026",
+        fy: 2026,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 300000,
+        actual: 366854,
+        percent: 122.30,
+        status: "EXCEEDED",
+        quarters: { q1: 353668, q2: 358207, q3: 362459, q4: 366854 },
+        explanation: "Exceeded target because TVC increased Claims Benefit Advisors serving veterans throughout the state. Veteran population increased and more veterans filed claims under the PACT Act. Final caseload reached 366,854 active cases.",
+        tags: ["active cases", "caseload", "pact act", "cbas", "output", "1-1-1"]
+      },
+      {
+        id: "strike-force-2026",
+        fy: 2026,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 5,
+        measureName: "# Claims Decisions Reviewed by Strike Force Teams",
+        type: "Output",
+        target: 5000, // Recalibrated target
+        actual: 17655,
+        percent: 353.10,
+        status: "EXCEEDED",
+        quarters: { q1: 4403, q2: 4834, q3: 4222, q4: 4196 },
+        explanation: "The Strike Force role transitioned from addressing VA backlogged compensation claims to reviewing decisions and appeals. Specialists are now required to complete a minimum of 7 reviews per day, generating 17,655 reviews (353.1% of target).",
+        tags: ["strike force", "decision reviews", "qc", "target exceeded", "output", "1-1-1"]
+      },
+
+      // ==================================================================
+      // --- FY 2025 ---
+      // ==================================================================
+      {
+        id: "awards-sc-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Monetary Awards w/ SC Disabilities ($ Millions)",
+        type: "Outcome",
+        target: 4628.28,
+        actual: 8806.72,
+        percent: 190.30,
+        status: "EXCEEDED",
+        quarters: { q1: null, q2: null, q3: null, q4: 8806.72 },
+        explanation: "Legislative changes (PACT Act) expanded compensation eligibility. Addition of new FTEs contributed to an increase in claims processing and monetary awards exceeding $8.8 Billion.",
+        tags: ["awards", "pact act", "monetary", "outcome", "1-1-1"]
+      },
+      {
+        id: "awards-wartime-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 2,
+        measureName: "Monetary Awards to Totally Disabled Wartime Vets ($ Millions)",
+        type: "Outcome",
+        target: 179.19,
+        actual: 65.92,
+        percent: 36.80,
+        status: "BELOW",
+        quarters: { q1: null, q2: null, q3: null, q4: 65.92 },
+        explanation: "Federal legislative changes increased eligibility for compensation, reducing pension awards. Declining population of WWII, Korea, and Vietnam veterans also lowered wartime pension requests.",
+        tags: ["wartime", "pension", "demographics", "outcome", "1-1-1"]
+      },
+      {
+        id: "awards-survivors-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 3,
+        measureName: "Monetary Awards for Survivors/Orphans ($ Millions)",
+        type: "Outcome",
+        target: 299.86,
+        actual: 389.33,
+        percent: 129.80,
+        status: "EXCEEDED",
+        quarters: { q1: null, q2: null, q3: null, q4: 389.33 },
+        explanation: "Federal legislative changes expanded dependent eligibility; declining older veteran population caused an increase in survivor claims, reaching $389.33M in awards.",
+        tags: ["survivors", "orphans", "outcome", "1-1-1"]
+      },
+      {
+        id: "cust-satisfaction-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 10,
+        measureName: "% Customer Satisfaction",
+        type: "Outcome",
+        target: 80.00,
+        actual: 98.00,
+        percent: 122.50,
+        status: "EXCEEDED",
+        quarters: { q1: 93.00, q2: 93.00, q3: 98.00, q4: 98.00 },
+        explanation: "Client satisfaction remained consistently high (93%-98%) because CBAs deliver quality service with advanced VA knowledge, verified by customer feedback surveys.",
+        tags: ["satisfaction", "quality", "customer", "outcome", "1-1-1"]
+      },
+      {
+        id: "sf-review-pct-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "% VA Claims Decisions Reviewed by Strike Force Teams (Non-Key)",
+        type: "Outcome",
+        target: 5.00,
+        actual: 6.00,
+        percent: 120.00,
+        status: "EXCEEDED",
+        quarters: { q1: 6.00, q2: 6.00, q3: 6.00, q4: 6.00 },
+        explanation: "Strike Force remained consistent with the percentage of claims reviewed (6.00% across all 4 quarters) exceeding the 5.00% target.",
+        tags: ["strike force", "percentage", "non-key", "outcome", "1-1-1"]
+      },
+      {
+        id: "favorable-decisions-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 5,
+        measureName: "% Favorable VA Claims Decisions Under TVC POA (Non-Key)",
+        type: "Outcome",
+        target: 65.00,
+        actual: 78.00,
+        percent: 120.00,
+        status: "EXCEEDED",
+        quarters: { q1: null, q2: null, q3: null, q4: 78.00 },
+        explanation: "Claims reviewed by Waco and Houston Regional Offices resulted in a 78.0% favorable decision rate, exceeding target by 20%.",
+        tags: ["favorable", "approval rate", "poa", "outcome", "1-1-1"]
+      },
+      {
+        id: "claims-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed & Fully-Developed for Disabled Vets",
+        type: "Output",
+        target: 126887,
+        actual: 49409,
+        percent: 38.90,
+        status: "BELOW",
+        quarters: { q1: 11155, q2: 11446, q3: 13329, q4: 13479 },
+        explanation: "Below target because TVC now counts claim forms submitted, not individual disability issues per claim as when the 126,887 target was developed. Target revised to 45,000 for FY26.",
+        tags: ["claims", "counting change", "vetpro", "target revision", "output", "1-1-1"]
+      },
+      {
+        id: "non-service-claims-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 2,
+        measureName: "# Non-Service Connected Claims Filed to VA",
+        type: "Output",
+        target: 6100,
+        actual: 207,
+        percent: 3.40,
+        status: "BELOW",
+        quarters: { q1: 42, q2: 59, q3: 56, q4: 50 },
+        explanation: "Non-service-related pensions remained low as WWII/Korea/Vietnam generations decline, and eligible veterans qualify for service-connected benefits under the PACT Act. Measure deleted in FY26.",
+        tags: ["nsc", "pension", "obsolete", "output", "1-1-1"]
+      },
+      {
+        id: "survivor-claims-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 3,
+        measureName: "Claims Filed on Behalf of Survivors & Orphans (Non-Key)",
+        type: "Output",
+        target: 1825,
+        actual: 1720,
+        percent: 94.20,
+        status: "BELOW",
+        quarters: { q1: 360, q2: 417, q3: 504, q4: 439 },
+        explanation: "Total of 1,720 claims filed (94.2% of target). Fluctuations influenced by seasonal death patterns and staff training in July.",
+        tags: ["survivors", "orphans", "non-key", "output", "1-1-1"]
+      },
+      {
+        id: "active-cases-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 286976,
+        actual: 348534,
+        percent: 121.50,
+        status: "EXCEEDED",
+        quarters: { q1: 334067, q2: 338089, q3: 343111, q4: 348534 },
+        explanation: "Counts active cases TVC represents under POA. Exceeded target due to added Claims Benefit Advisors and veterans filing under the PACT Act.",
+        tags: ["active cases", "caseload", "pact act", "growth", "output", "1-1-1"]
+      },
+      {
+        id: "strike-force-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 5,
+        measureName: "# Claims Decisions Reviewed by Strike Force Teams",
+        type: "Output",
+        target: 30240,
+        actual: 20963,
+        percent: 69.30,
+        status: "BELOW",
+        quarters: { q1: 5501, q2: 5911, q3: 5490, q4: 4061 },
+        explanation: "Strike Force role changed from backlog claims to decision and appeal reviews. Target will be reduced to 5,000 for FY26.",
+        tags: ["strike force", "decision reviews", "target recalibration", "output", "1-1-1"]
+      },
+      {
+        id: "eff-payments-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "VA Payments to Veterans Per Dollar Spent ($) [Obsolete]",
+        type: "Efficiency",
+        target: 579.43,
+        actual: 201.00,
+        percent: 34.70,
+        status: "BELOW",
+        quarters: { q1: 100.80, q2: 100.50, q3: null, q4: null },
+        explanation: "This efficiency measure was deemed obsolete and no longer valid; scheduled for removal in FY26.",
+        tags: ["efficiency", "obsolete", "payments per dollar", "1-1-1"]
+      },
+      {
+        id: "eff-sf-payments-2025",
+        fy: 2025,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 2,
+        measureName: "VA Payments through Strike Force QC Efforts ($) [Obsolete]",
+        type: "Efficiency",
+        target: 133.91,
+        actual: 112.73,
+        percent: 84.20,
+        status: "BELOW",
+        quarters: { q1: 72.01, q2: 112.73, q3: null, q4: null },
+        explanation: "Measure deemed obsolete and scheduled for removal in FY26 due to Strike Force role restructuring.",
+        tags: ["efficiency", "obsolete", "strike force", "1-1-1"]
+      },
+
+      // ==================================================================
+      // --- FY 2024 ---
+      // ==================================================================
+  
+      {
+        
+        id: "claims-2024",
+        fy: 2024,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS BENEFITS & ASSISTANCE",
+        measureNumber: 1,
+        measureName: "Claims Filed for Disabled Vets",
+        type: "Output",
+        target: 126887,
+        actual: 46581,
+        percent: 36.71,
+        status: "BELOW",
+        quarters: { q1: 12053, q2: 11819, q3: 12023, q4: 10686 },
+        explanation: "TVC now counts claim forms submitted, not individual disability issues per claim as when target was set. Target adjustments submitted for FY26 and FY27.",
+        tags: ["claims", "form vs issue", "vetpro", "output", "1-1-1"]
+      },
+      {
+        id: "nsc-claims-2024",
+        fy: 2024,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS BENEFITS & ASSISTANCE",
+        measureNumber: 2,
+        measureName: "# Non-Service Claims Filed to DVA",
+        type: "Output",
+        target: 6100,
+        actual: 220,
+        percent: 3.61,
+        status: "BELOW",
+        quarters: { q1: 65, q2: 45, q3: 53, q4: 57 },
+        explanation: "Non-service pensions decreased as veterans became qualified for service-connected disabilities under the PACT Act.",
+        tags: ["pension", "pact act", "nsc", "output", "1-1-1"]
+      },
+      {
+        id: "active-cases-2024",
+        fy: 2024,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS BENEFITS & ASSISTANCE",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 286976,
+        actual: 328721,
+        percent: 114.55,
+        status: "EXCEEDED",
+        quarters: { q1: 57497, q2: 317844, q3: 323364, q4: 328721 },
+        explanation: "Increase in overall active caseload due to expanded service-connected conditions under the PACT Act. Total reached 328,721 active cases by Q4.",
+        tags: ["caseload", "pact act", "active cases", "output", "1-1-1"]
+      },
+      {
+        id: "strike-force-2024",
+        fy: 2024,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS BENEFITS & ASSISTANCE",
+        measureNumber: 5,
+        measureName: "# Claims Decisions Reviewed by Strike Force",
+        type: "Output",
+        target: 30240,
+        actual: 20992,
+        percent: 69.42,
+        status: "BELOW",
+        quarters: { q1: 5170, q2: 5160, q3: 5048, q4: 5614 },
+        explanation: "Strike Force role changed from addressing VA compensation backlog claims to performing decision and appellate assessments.",
+        tags: ["strike force", "decision reviews", "output", "1-1-1"]
+      },
+
+      // ==================================================================
+      // --- FY 2023 ---
+      // ==================================================================
+      {
+        id: "claims-2023",
+        fy: 2023,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS ASSISTANCE & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed for Disabled Vets",
+        type: "Output",
+        target: 126887,
+        actual: 45549,
+        percent: 35.90,
+        status: "BELOW",
+        quarters: { q1: 11025, q2: 11170, q3: 11945, q4: 11409 },
+        explanation: "TVC changed counting methodology: counting number of forms submitted, not the number of issues. Under previous metric, issues submitted would be approx 88,000.",
+        tags: ["claims", "form counting", "vetpro", "output", "1-1-1"]
+      },
+      {
+        id: "nsc-claims-2023",
+        fy: 2023,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS ASSISTANCE & COUNSELING",
+        measureNumber: 2,
+        measureName: "# Non-Service Claims Filed to DVA",
+        type: "Output",
+        target: 1074,
+        actual: 395,
+        percent: 36.78,
+        status: "BELOW",
+        quarters: { q1: 122, q2: 133, q3: 93, q4: 47 },
+        explanation: "Due to passage of the PACT Act, veterans previously eligible only for non-service connected pensions became eligible for service connected compensation, reducing pension submissions.",
+        tags: ["nsc", "pension", "pact act", "output", "1-1-1"]
+      },
+      {
+        id: "active-cases-2023",
+        fy: 2023,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS ASSISTANCE & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 286261,
+        actual: 310118,
+        percent: 108.33,
+        status: "EXCEEDED",
+        quarters: { q1: 250571, q2: 276452, q3: 305613, q4: 310118 },
+        explanation: "Active benefit caseload exceeded 310,000 cases driven by implementation of PACT Act presumptions.",
+        tags: ["active cases", "caseload", "pact act", "output", "1-1-1"]
+      },
+      {
+        id: "appeals-2023",
+        fy: 2023,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS ASSISTANCE & COUNSELING",
+        measureNumber: 5,
+        measureName: "# VA Decisions Appealed",
+        type: "Output",
+        target: 5607,
+        actual: 18590,
+        percent: 331.55,
+        status: "EXCEEDED",
+        quarters: { q1: 4090, q2: 4719, q3: 5040, q4: 4741 },
+        explanation: "Target was established prior to Appeals Modernization Act which opened new appeal pathways (Forms 10182, 20-0995, 20-0996). Surge also driven by August 2022 PACT Act implementation.",
+        tags: ["appeals", "ama", "pact act", "higher-level review", "supplemental", "output", "1-1-1"]
+      },
+      {
+        id: "strike-force-2023",
+        fy: 2023,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS ASSISTANCE & COUNSELING",
+        measureNumber: 6,
+        measureName: "# Files Reviewed by Strike Force Team",
+        type: "Output",
+        target: 49212,
+        actual: 17091,
+        percent: 34.73,
+        status: "BELOW",
+        quarters: { q1: 4485, q2: 4343, q3: 3398, q4: 4865 },
+        explanation: "Strike Force no longer processes paper backlog claims and shifted to conducting Decision Reviews and Special Cases. Staffing was at 56%.",
+        tags: ["strike force", "decision reviews", "understaffed", "output", "1-1-1"]
+      },
+      {
+        id: "fdc-2023",
+        fy: 2023,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS ASSISTANCE & COUNSELING",
+        measureNumber: 7,
+        measureName: "# Fully Developed Claims Filed",
+        type: "Output",
+        target: 34516,
+        actual: 45549,
+        percent: 131.96,
+        status: "EXCEEDED",
+        quarters: { q1: 11025, q2: 11170, q3: 11945, q4: 11409 },
+        explanation: "All initial disability claims are now filed as Fully Developed Claims, making this measure redundant with Measure 1. Removed in FY24.",
+        tags: ["fdc", "redundant", "output", "1-1-1"]
+      },
+      {
+        id: "emp-services-2023",
+        fy: 2023,
+        strategyCode: "1-1-2",
+        strategyName: "VETERANS EMPLOYMENT SERVICES",
+        measureNumber: 1,
+        measureName: "% Veterans Receive Intensive Svcs",
+        type: "Output",
+        target: 90.00,
+        actual: 98.00,
+        percent: 108.89,
+        status: "EXCEEDED",
+        quarters: { q1: 98.00, q2: null, q3: null, q4: null },
+        explanation: "Data based on rolling quarters affected by higher post-pandemic unemployment periods.",
+        tags: ["employment", "intensive services", "output", "1-1-2"]
+      },
+
+      // ==================================================================
+      // --- FY 2022 ---
+      // ==================================================================
+      {
+        id: "awards-sc-2022",
+        fy: 2022,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Monetary Awards w/ SC Disabilities ($ Millions)",
+        type: "Outcome",
+        target: 2076.84,
+        actual: 4670.74,
+        percent: 153.90,
+        status: "EXCEEDED",
+        quarters: { q1: null, q2: null, q3: null, q4: 4670.74 },
+        explanation: "Veteran population in Texas increased due to economic growth, Agent Orange, Blue Water Navy Act, and COVID. Reached $4.67 Billion in awards.",
+        tags: ["awards", "monetary", "blue water navy", "agent orange", "outcome", "1-1-1"]
+      },
+      {
+        id: "awards-survivors-2022",
+        fy: 2022,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 2,
+        measureName: "Monetary Awards for Survivors/Orphans ($ Millions)",
+        type: "Outcome",
+        target: 291.98,
+        actual: 260.62,
+        percent: 62.50,
+        status: "BELOW",
+        quarters: { q1: null, q2: null, q3: null, q4: 260.62 },
+        explanation: "Measure indicates survivors in receipt of both DIC and Survivors Pension offset by Maximum Allowable Pension Rate (MAPR). DIC cases pending PACT review.",
+        tags: ["survivors", "orphans", "dic", "outcome", "1-1-1"]
+      },
+      {
+        id: "claims-2022",
+        fy: 2022,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed for Disabled Vets",
+        type: "Output",
+        target: 126256,
+        actual: 103557,
+        percent: 82.00,
+        status: "BELOW",
+        quarters: { q1: 23946, q2: 22284, q3: 30251, q4: 27076 },
+        explanation: "Q4 fell below due to transition of Client Management System (CMS) during the last 3 weeks of the reporting cycle.",
+        tags: ["claims", "cms transition", "output", "1-1-1"]
+      },
+      {
+        id: "nsc-claims-2022",
+        fy: 2022,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 2,
+        measureName: "# Non-Service Connected Claims Filed to VA",
+        type: "Output",
+        target: 1069,
+        actual: 25076,
+        percent: 2345.70,
+        status: "EXCEEDED",
+        quarters: { q1: 6489, q2: 6316, q3: 6154, q4: 6117 },
+        explanation: "Data source shifted to VA-Hines report reflecting 6,117 NSC Pension cases filed under TVC POA monthly, causing a temporary statistical spike before methodology alignment.",
+        tags: ["hines", "nsc", "pension", "spike", "output", "1-1-1"]
+      },
+      {
+        id: "active-cases-2022",
+        fy: 2022,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 285548,
+        actual: 246313,
+        percent: 86.30,
+        status: "BELOW",
+        quarters: { q1: 241151, q2: 242581, q3: 244761, q4: 246313 },
+        explanation: "Claims Department had 10 staff vacancies (GR) which directly impacted caseload completion efficiency.",
+        tags: ["active cases", "vacancies", "output", "1-1-1"]
+      },
+      {
+        id: "appeals-2022",
+        fy: 2022,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 5,
+        measureName: "# VA Decisions Appealed",
+        type: "Output",
+        target: 5580,
+        actual: 7345,
+        percent: 131.60,
+        status: "EXCEEDED",
+        quarters: { q1: 2006, q2: 1767, q3: 1983, q4: 1589 },
+        explanation: "Appeals submitted on behalf of Texas Veterans effectively stabilized as TVC CBAs became more proficient in AMA processing.",
+        tags: ["appeals", "ama", "output", "1-1-1"]
+      },
+      {
+        id: "strike-force-2022",
+        fy: 2022,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 6,
+        measureName: "# Files Reviewed by Strike Force Team",
+        type: "Output",
+        target: 48968,
+        actual: 16939,
+        percent: 34.60,
+        status: "BELOW",
+        quarters: { q1: 5442, q2: 4191, q3: 3086, q4: 4220 },
+        explanation: "Strike Force staffing shortages at Waco Regional Office (5 personnel, 44% staffing) and Houston Regional Office (2 personnel, 84% staffing) impacted review volume.",
+        tags: ["strike force", "staffing", "waco", "houston", "output", "1-1-1"]
+      },
+      {
+        id: "fdc-2022",
+        fy: 2022,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 7,
+        measureName: "# Fully Developed Claims Filed",
+        type: "Output",
+        target: 34344,
+        actual: 18083,
+        percent: 52.70,
+        status: "BELOW",
+        quarters: { q1: 4055, q2: 3721, q3: 4973, q4: 5334 },
+        explanation: "LAR removes this measure as all claims are presumed Fully Developed until VA review determines if additional development is required.",
+        tags: ["fdc", "fully developed", "output", "1-1-1"]
+      },
+      {
+        id: "eff-payments-2022",
+        fy: 2022,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "VA Payments / Dollar Spent ($)",
+        type: "Efficiency",
+        target: 698.22,
+        actual: 140.56,
+        percent: 20.10,
+        status: "BELOW",
+        quarters: { q1: 154.24, q2: 144.29, q3: 142.29, q4: 140.56 },
+        explanation: "Non-cumulative metric. Annual goals require recalculation based on multi-year VBA hard data.",
+        tags: ["efficiency", "roi", "payments per dollar", "1-1-1"]
+      },
+      {
+        id: "eff-sf-payments-2022",
+        fy: 2022,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 2,
+        measureName: "VA Pymts to Vets / State Dollar Spent (Strike Force) ($)",
+        type: "Efficiency",
+        target: 132.12,
+        actual: 785.93,
+        percent: 594.90,
+        status: "EXCEEDED",
+        quarters: { q1: 155.06, q2: 398.51, q3: 598.95, q4: 785.93 },
+        explanation: "Mission of Strike Force changed from backlog clearing to QA/Review of claims. Cumulative yield reached $785.93 per dollar spent (594.9% of target).",
+        tags: ["efficiency", "strike force", "roi", "1-1-1"]
+      },
+
+      // ==================================================================
+      // --- FY 2021 ---
+      // ==================================================================
+      {
+        id: "claims-2021",
+        fy: 2021,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed for Disabled Vets",
+        type: "Output",
+        target: 114478,
+        actual: 89364,
+        percent: 78.06,
+        status: "BELOW",
+        quarters: { q1: 20144, q2: 21246, q3: 23346, q4: 24628 },
+        explanation: "State offices closed to face-to-face services due to COVID-19 on March 13, 2020. Deployed Microsoft Bookings and virtual appointments. Reconstitution began showing quarterly gains from 20.1k in Q1 to 24.6k in Q4.",
+        tags: ["claims", "covid-19", "reconstitution", "bookings", "output", "1-1-1"]
+      },
+      {
+        id: "active-cases-2021",
+        fy: 2021,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 255420,
+        actual: 239201,
+        percent: 93.65,
+        status: "BELOW",
+        quarters: { q1: 235634, q2: 236062, q3: 237721, q4: 239201 },
+        explanation: "COVID-19 impacted veteran claims filing. Utilization of QR signs, web booking, and virtual outreach supported 239,201 active cases by Q4.",
+        tags: ["active cases", "covid", "caseload", "output", "1-1-1"]
+      },
+      {
+        id: "appeals-2021",
+        fy: 2021,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 5,
+        measureName: "# VA Decisions Appealed",
+        type: "Output",
+        target: 23532,
+        actual: 6914,
+        percent: 29.38,
+        status: "BELOW",
+        quarters: { q1: 991, q2: 1887, q3: 1966, q4: 2070 },
+        explanation: "Appeals Improvement & Modernization Act of 2017 (AMA) modified appeals options: Supplemental Claims, Higher Level Review (HLR), Notice of Disagreement (NOD). More senior workforce and FDC filings resulted in fewer denials.",
+        tags: ["appeals", "ama", "hlr", "supplemental", "output", "1-1-1"]
+      },
+      {
+        id: "strike-force-2021",
+        fy: 2021,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 6,
+        measureName: "# Files Reviewed by Strike Force Team",
+        type: "Output",
+        target: 48725,
+        actual: 27087,
+        percent: 55.59,
+        status: "BELOW",
+        quarters: { q1: 7148, q2: 5596, q3: 7537, q4: 6806 },
+        explanation: "Reviewed files directly correlated with initial claims filed. Submission methods shifted to electronic systems (VetraSpec) away from legacy mail.",
+        tags: ["strike force", "vetraspec", "electronic", "output", "1-1-1"]
+      },
+      {
+        id: "fdc-2021",
+        fy: 2021,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 7,
+        measureName: "# Fully Developed Claims Filed",
+        type: "Output",
+        target: 12709,
+        actual: 15777,
+        percent: 124.14,
+        status: "EXCEEDED",
+        quarters: { q1: 3643, q2: 3754, q3: 3621, q4: 4477 },
+        explanation: "Revised VBA processing guidelines for Fully Developed Claims and improved counselor training resulted in exceeding target by 24.14%.",
+        tags: ["fdc", "fully developed", "vba guidelines", "output", "1-1-1"]
+      },
+
+      // ==================================================================
+      // --- FY 2020 ---
+      // ==================================================================
+      {
+        id: "claims-2020",
+        fy: 2020,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed for Disabled Vets",
+        type: "Output",
+        target: 113909,
+        actual: 96029,
+        percent: 84.30,
+        status: "BELOW",
+        quarters: { q1: 32477, q2: 31720, q3: 15285, q4: 16547 },
+        explanation: "Q2: Increase in filing claims for disabled veterans due to personnel hiring.\n\nQ3 & Q4: Decrease in filing claims due to the initial onset of the COVID-19 pandemic closures.",
+        tags: ["claims", "disability", "counseling", "covid", "pandemic", "1-1-1"]
+      },
+      {
+        id: "active-cases-2020",
+        fy: 2020,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 254150,
+        actual: 234112,
+        percent: 92.12,
+        status: "BELOW",
+        quarters: { q1: 230186, q2: 232828, q3: 234334, q4: 234112 },
+        explanation: "Decrease in active VA benefit cases is due to a recalculation of the formula used to separate POAs to record TVC cases more accurately.",
+        tags: ["caseload", "active", "poa", "formula", "recalculation", "covid", "1-1-1"]
+      },
+      {
+        id: "appeals-2020",
+        fy: 2020,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 5,
+        measureName: "# VA Decisions Appealed",
+        type: "Output",
+        target: 23415,
+        actual: 4149,
+        percent: 17.72,
+        status: "BELOW",
+        quarters: { q1: 1266, q2: 1214, q3: 921, q4: 748 },
+        explanation: "Decrease in filing appeals due to VA implementing a new business practice change under the Appeals Modernization Act (AMA). VetraSpec case management system did not have the latest VA appeals data fields uploaded.",
+        tags: ["appeals", "ama", "vetraspec", "modernization", "dispute", "1-1-1"]
+      },
+      {
+        id: "strike-force-2020",
+        fy: 2020,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 6,
+        measureName: "# Files Reviewed by Strike Force Team",
+        type: "Output",
+        target: 48483,
+        actual: 33342,
+        percent: 68.77,
+        status: "BELOW",
+        quarters: { q1: 8900, q2: 7005, q3: 9760, q4: 6076 },
+        explanation: "Reporting error identified for AY20 Q1 (originally 10,501, adjusted down to 8,900). Strike Force understaffing mitigated by Q3 hiring and COVID-19 WFH practices allowing concentrated file review spikes.",
+        tags: ["strike force", "backlog", "reviews", "telework", "wfh", "covid", "1-1-1"]
+      },
+      {
+        id: "fdc-2020",
+        fy: 2020,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 7,
+        measureName: "# Fully Developed Claims Filed",
+        type: "Output",
+        target: 12646,
+        actual: 9570,
+        percent: 75.68,
+        status: "BELOW",
+        quarters: { q1: 9570, q2: null, q3: null, q4: null },
+        explanation: "Fully developed claims filed increased due to the increase of staff members and revised reporting of FDC claims filed.",
+        tags: ["fdc", "fully developed", "reporting revision", "1-1-1"]
+      },
+
+      // ==================================================================
+      // --- FY 2019 ---
+      // ==================================================================
+      {
+        id: "claims-2019",
+        fy: 2019,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed for Disabled Vets",
+        type: "Output",
+        target: 130320,
+        actual: 166490,
+        percent: 127.75,
+        status: "EXCEEDED",
+        quarters: { q1: 41094, q2: 40348, q3: 39790, q4: 45258 },
+        explanation: "All-time high volume. Texas leads all other states in monetary claims. Improved training activities as well as continued efforts to file reconsiderations generated 166,490 claims.",
+        tags: ["claims", "record", "disability", "counseling", "monetary", "1-1-1"]
+      },
+      {
+        id: "active-cases-2019",
+        fy: 2019,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 260314,
+        actual: 283417,
+        percent: 108.88,
+        status: "EXCEEDED",
+        quarters: { q1: 274392, q2: 277012, q3: 280006, q4: 283417 },
+        explanation: "Active caseload reached 283,417 as TVC counselors filed high-quality claims attracting veterans statewide.",
+        tags: ["caseload", "active", "representation", "1-1-1"]
+      },
+      {
+        id: "appeals-2019",
+        fy: 2019,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 5,
+        measureName: "# VA Decisions Appealed",
+        type: "Output",
+        target: 24006,
+        actual: 4874,
+        percent: 20.30,
+        status: "BELOW",
+        quarters: { q1: 1523, q2: 1078, q3: 798, q4: 1475 },
+        explanation: "Decrease in filing appeals due to the Department of Veterans Affairs implementing new business practice changes.",
+        tags: ["appeals", "ama", "business practice change", "1-1-1"]
+      },
+      {
+        id: "strike-force-2019",
+        fy: 2019,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 6,
+        measureName: "# Files Reviewed by Strike Force Team",
+        type: "Output",
+        target: 61407,
+        actual: 34907,
+        percent: 56.85,
+        status: "BELOW",
+        quarters: { q1: 10454, q2: 7744, q3: 7178, q4: 9531 },
+        explanation: "Decrease in the amount of files reviewed due to Strike Force understaffing.",
+        tags: ["strike force", "backlog", "understaffed", "1-1-1"]
+      },
+      {
+        id: "fdc-2019",
+        fy: 2019,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 7,
+        measureName: "# Files Rev by Fully Dev Claim Team",
+        type: "Output",
+        target: 65144,
+        actual: 4297,
+        percent: 6.60,
+        status: "BELOW",
+        quarters: { q1: 1935, q2: 1021, q3: 721, q4: 620 },
+        explanation: "Decrease in amount of FDC claims reviewed due to FDC team being understaffed.",
+        tags: ["fdc", "understaffed", "reviews", "1-1-1"]
+      },
+      {
+        id: "emp-services-2019",
+        fy: 2019,
+        strategyCode: "1-1-2",
+        strategyName: "VETERANS EMPLOYMENT SERVICES",
+        measureNumber: 1,
+        measureName: "% Veterans Receive Intensive Svcs",
+        type: "Output",
+        target: 90.00,
+        actual: 95.71,
+        percent: 106.34,
+        status: "EXCEEDED",
+        quarters: { q1: 85.96, q2: 95.71, q3: null, q4: null },
+        explanation: "Leadership reviewed keyed entries into WorkInTexas (WIT) and cleaned duplicative services.",
+        tags: ["employment", "intensive services", "wit", "1-1-2"]
+      },
+
+      // ==================================================================
+      // --- FY 2018 ---
+      // ==================================================================
+      {
+        id: "claims-2018",
+        fy: 2018,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed for Disabled Vets",
+        type: "Output",
+        target: 126525,
+        actual: 143357,
+        percent: 113.30,
+        status: "EXCEEDED",
+        quarters: { q1: 28267, q2: 28382, q3: 39907, q4: 46801 },
+        explanation: "Surpassed target by 13.30% with 143,357 claims filed. Strong rebound in Q3/Q4 after VA online stakeholder portal launch.",
+        tags: ["claims", "disability", "counseling", "stakeholders portal", "1-1-1"]
+      },
+      {
+        id: "active-cases-2018",
+        fy: 2018,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 255441,
+        actual: 251624,
+        percent: 98.51,
+        status: "MET",
+        quarters: { q1: 235892, q2: 236159, q3: 267252, q4: 251624 },
+        explanation: "Active caseload reached 251,624 cases (98.51% of target), peaking at 267k in Q3.",
+        tags: ["caseload", "active", "1-1-1"]
+      },
+      {
+        id: "appeals-2018",
+        fy: 2018,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 5,
+        measureName: "# VA Decisions Appealed",
+        type: "Output",
+        target: 23535,
+        actual: 14284,
+        percent: 60.69,
+        status: "BELOW",
+        quarters: { q1: 4502, q2: 4437, q3: 3191, q4: 2154 },
+        explanation: "Decrease in appeals due to VA business practice changes and increased filing of reconsiderations and quality claims.",
+        tags: ["appeals", "business change", "quality claims", "1-1-1"]
+      },
+      {
+        id: "strike-force-2018",
+        fy: 2018,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 6,
+        measureName: "# Files Reviewed by Strike Force Team",
+        type: "Output",
+        target: 60203,
+        actual: 34661,
+        percent: 57.57,
+        status: "BELOW",
+        quarters: { q1: 8723, q2: 11064, q3: 7000, q4: 7874 },
+        explanation: "Staff shortages stemming from FY17 hiring freeze and separation of FDC reviews into its own distinct measure.",
+        tags: ["strike force", "hiring freeze", "staff shortage", "measure split", "1-1-1"]
+      },
+      {
+        id: "fdc-2018",
+        fy: 2018,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 7,
+        measureName: "# Files Rev by Fully Dev Claim Team",
+        type: "Output",
+        target: 59222,
+        actual: 11678,
+        percent: 19.72,
+        status: "BELOW",
+        quarters: { q1: 4165, q2: 4798, q3: 2715, q4: null },
+        explanation: "Due to hiring freeze in FY17, unit was not fully staffed until late 2018.",
+        tags: ["fdc", "hiring freeze", "staffing", "1-1-1"]
+      },
+
+      // ==================================================================
+      // --- FY 2017 ---
+      // ==================================================================
+      {
+        id: "awards-vets-2017",
+        fy: 2017,
+        strategyCode: "1-1",
+        strategyName: "MAINTAIN VETERANS' BENEFITS AWARDS",
+        measureNumber: 1,
+        measureName: "VA Awards - Disabled Vets ($ Millions)",
+        type: "Outcome",
+        target: 2317.00,
+        actual: 3709.53,
+        percent: 160.10,
+        status: "EXCEEDED",
+        quarters: { q1: null, q2: null, q3: null, q4: 3709.53 },
+        explanation: "First year established as Key Measure. Exceeded target by more than 160% with $3.71 Billion awarded to disabled veterans.",
+        tags: ["awards", "monetary", "outcome", "disabled vets", "1-1"]
+      },
+      {
+        id: "awards-survivors-2017",
+        fy: 2017,
+        strategyCode: "1-1",
+        strategyName: "MAINTAIN VETERANS' BENEFITS AWARDS",
+        measureNumber: 3,
+        measureName: "VA Awards - Survivors/Orphans ($ Millions)",
+        type: "Outcome",
+        target: 263.30,
+        actual: 278.66,
+        percent: 105.83,
+        status: "EXCEEDED",
+        quarters: { q1: null, q2: null, q3: null, q4: 278.66 },
+        explanation: "Exceeded target with $278.66 Million awarded to survivors and orphans.",
+        tags: ["awards", "survivors", "orphans", "outcome", "1-1"]
+      },
+      {
+        id: "claims-2017",
+        fy: 2017,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed for Disabled Vets",
+        type: "Output",
+        target: 101707,
+        actual: 126813,
+        percent: 124.68,
+        status: "EXCEEDED",
+        quarters: { q1: 29083, q2: 31621, q3: 33706, q4: 32403 },
+        explanation: "Exceeded target for SCD claims due to continual training on best practices and high influx of transitioning veterans to Texas.",
+        tags: ["claims", "disability", "counseling", "training", "transitioning", "1-1-1"]
+      },
+      {
+        id: "active-cases-2017",
+        fy: 2017,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 218556,
+        actual: 260488,
+        percent: 119.19,
+        status: "EXCEEDED",
+        quarters: { q1: 250057, q2: 252314, q3: 256235, q4: 260488 },
+        explanation: "Accredited counselors in 37 offices throughout Texas reached 260,488 active cases (119.19% of target).",
+        tags: ["caseload", "active", "37 offices", "output", "1-1-1"]
+      },
+      {
+        id: "appeals-2017",
+        fy: 2017,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 6,
+        measureName: "# VA Decisions Appealed",
+        type: "Output",
+        target: 22021,
+        actual: 19225,
+        percent: 87.30,
+        status: "BELOW",
+        quarters: { q1: 4991, q2: 4313, q3: 5077, q4: 4844 },
+        explanation: "Decrease in appeals processed due to VA implementing business practice changes and statewide hiring freeze impacting capacity.",
+        tags: ["appeals", "hiring freeze", "fully developed", "output", "1-1-1"]
+      },
+      {
+        id: "strike-force-2017",
+        fy: 2017,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 7,
+        measureName: "# Files Reviewed by Strike Force Team",
+        type: "Output",
+        target: 26300,
+        actual: 22311,
+        percent: 84.83,
+        status: "BELOW",
+        quarters: { q1: 11562, q2: 10749, q3: null, q4: null },
+        explanation: "Strike Force was instrumental in reducing dependency claim backlogs nationwide.",
+        tags: ["strike force", "dependency", "backlog", "national leader", "output", "1-1-1"]
+      },
+
+      // ==================================================================
+      // --- FY 2016 ---
+      // ==================================================================
+      {
+        id: "claims-2016",
+        fy: 2016,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed for Disabled Vets",
+        type: "Output",
+        target: 101201,
+        actual: 135514,
+        percent: 133.91,
+        status: "EXCEEDED",
+        quarters: { q1: 30131, q2: 33526, q3: 35205, q4: 36652 },
+        explanation: "TVC provided 120 public information briefings through various media channels informing veterans about benefits, achieving 133.91% of target.",
+        tags: ["claims", "disability", "counseling", "briefings", "output", "1-1-1"]
+      },
+      {
+        id: "active-cases-2016",
+        fy: 2016,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 217469,
+        actual: 247295,
+        percent: 113.72,
+        status: "EXCEEDED",
+        quarters: { q1: 238519, q2: 240565, q3: 243767, q4: 247295 },
+        explanation: "Media awareness campaigns expanded caseload to 247,295 active cases under TVC Power of Attorney.",
+        tags: ["caseload", "active", "poa", "awareness", "output", "1-1-1"]
+      },
+      {
+        id: "appeals-2016",
+        fy: 2016,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 6,
+        measureName: "# VA Decisions Appealed",
+        type: "Output",
+        target: 21911,
+        actual: 21995,
+        percent: 100.38,
+        status: "MET",
+        quarters: { q1: 5682, q2: 5691, q3: 5658, q4: 4964 },
+        explanation: "Accurate quarterly pacing met 100.38% of legislative target under legacy appeals rules.",
+        tags: ["appeals", "legacy appeals", "target met", "output", "1-1-1"]
+      },
+      {
+        id: "strike-force-2016",
+        fy: 2016,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 7,
+        measureName: "# Files Reviewed by Strike Force Team",
+        type: "Output",
+        target: 24100,
+        actual: 23317,
+        percent: 96.75,
+        status: "MET",
+        quarters: { q1: 6493, q2: 9151, q3: 7673, q4: null },
+        explanation: "Strike force reached 96.75% of target by Q3 with 23,317 backlog reviews.",
+        tags: ["strike force", "backlog reduction", "output", "1-1-1"]
+      },
+
+      // ==================================================================
+      // --- FY 2015 ---
+      // ==================================================================
+      {
+        id: "claims-2015",
+        fy: 2015,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 1,
+        measureName: "Claims Filed for Disabled Vets",
+        type: "Output",
+        target: 100698,
+        actual: 116166,
+        percent: 115.36,
+        status: "EXCEEDED",
+        quarters: { q1: 25657, q2: 26785, q3: 30889, q4: 32835 },
+        explanation: "Surpassed 4th Quarter targeted goal by 10.36%. According to the VA, veterans claimed more individual medical conditions than ever before seen as earlier generations aged.",
+        tags: ["claims", "disability", "counseling", "aging veterans", "output", "1-1-1"]
+      },
+      {
+        id: "active-cases-2015",
+        fy: 2015,
+        strategyCode: "1-1-1",
+        strategyName: "CLAIMS REPRESENTATION & COUNSELING",
+        measureNumber: 4,
+        measureName: "Active VA Benefit Cases",
+        type: "Output",
+        target: 216387,
+        actual: 234393,
+        percent: 108.32,
+        status: "EXCEEDED",
+        quarters: { q1: 223524, q2: 225682, q3: 229436, q4: 234393 },
+        explanation: "Returning Service Members increased demand for TVC claims representation and POA appointments, reaching 234,393 active cases.",
+        tags: ["caseload", "active", "returning members", "output", "1-1-1"]
+      }
+    ];
+
+    /* ====================================================================
+       2. REACTIVE CONTROLLER & FILTER ENGINE
+       ==================================================================== */
+    const filterState = {
+      searchQuery: '',
+      fy: 'ALL',
+      strategy: 'ALL',
+      type: 'ALL',
+      status: 'ALL',
+      sortBy: 'year-desc'
+    };
+
+    let filteredRecords = [];
+    let longitudinalChartInstance = null;
+    let quarterlyChartInstance = null;
+
+    function formatNumber(val, isPct = false) {
+      if (val === null || val === undefined || isNaN(val)) return '—';
+      if (isPct) return Number(val).toFixed(2) + '%';
+      return Number(val).toLocaleString('en-US', { maximumFractionDigits: 2 });
+    }
+
+    function getStatusBadge(pct) {
+      if (pct > 105) {
+        return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                  <i class="fa-solid fa-circle-check text-[10px] mr-1"></i> Exceeded
+                </span>`;
+      } else if (pct >= 95) {
+        return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300 dark:border-blue-700">
+                  <i class="fa-solid fa-check text-[10px] mr-1"></i> On Target
+                </span>`;
+      } else {
+        return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-300 dark:border-rose-700">
+                  <i class="fa-solid fa-triangle-exclamation text-[10px] mr-1"></i> Below Target
+                </span>`;
+      }
+    }
+
+    function runFilterPipeline() {
+      const q = filterState.searchQuery.trim().toLowerCase();
+
+      filteredRecords = rawPerformanceData.filter(item => {
+        if (filterState.fy !== 'ALL' && item.fy.toString() !== filterState.fy) {
+          return false;
+        }
+        if (filterState.strategy !== 'ALL' && item.strategyCode !== filterState.strategy) {
+          return false;
+        }
+        if (filterState.type !== 'ALL' && item.type !== filterState.type) {
+          return false;
+        }
+        if (filterState.status === 'EXCEEDED' && item.percent <= 105) {
+          return false;
+        }
+        if (filterState.status === 'MET' && (item.percent < 95 || item.percent > 105)) {
+          return false;
+        }
+        if (filterState.status === 'BELOW' && item.percent >= 95) {
+          return false;
+        }
+        if (q.length > 0) {
+          const match = 
+            item.measureName.toLowerCase().includes(q) ||
+            item.strategyName.toLowerCase().includes(q) ||
+            item.strategyCode.toLowerCase().includes(q) ||
+            item.fy.toString().includes(q) ||
+            item.type.toLowerCase().includes(q) ||
+            item.explanation.toLowerCase().includes(q) ||
+            item.tags.some(t => t.toLowerCase().includes(q));
+
+          if (!match) return false;
+        }
+
+        return true;
+      });
+
+      applySort();
+      renderKpiCards();
+      renderTable();
+      updateLongitudinalChart();
+      updateQuarterlyChart();
+    }
+
+    function applySort() {
+      const mode = filterState.sortBy;
+      filteredRecords.sort((a, b) => {
+        if (mode === 'year-desc') return b.fy - a.fy || a.measureNumber - b.measureNumber;
+        if (mode === 'year-asc') return a.fy - b.fy || a.measureNumber - b.measureNumber;
+        if (mode === 'percent-desc') return b.percent - a.percent;
+        if (mode === 'percent-asc') return a.percent - b.percent;
+        if (mode === 'name-asc') return a.measureName.localeCompare(b.measureName);
+        return 0;
+      });
+    }
+
+    function renderKpiCards() {
+      const container = document.getElementById('kpiSummaryRow');
+      if (!container) return;
+
+      const totalVisible = filteredRecords.length;
+      const countExceeded = filteredRecords.filter(d => d.percent > 105).length;
+      const countMet = filteredRecords.filter(d => d.percent >= 95 && d.percent <= 105).length;
+      const countBelow = filteredRecords.filter(d => d.percent < 95).length;
+      
+      const avgAttainment = totalVisible > 0 
+        ? (filteredRecords.reduce((acc, c) => acc + c.percent, 0) / totalVisible).toFixed(1)
+        : '—';
+
+      const quickStatsSummary = document.getElementById('quickStatsSummary');
+      if (quickStatsSummary) {
+        quickStatsSummary.textContent = `Showing ${totalVisible} of ${rawPerformanceData.length} ABEST Performance Records`;
+      }
+
+      container.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm transition">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Filtered Measures</span>
+            <span class="p-1.5 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 rounded-lg text-xs"><i class="fa-solid fa-list-check"></i></span>
+          </div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">${totalVisible}</h3>
+            <span class="text-xs text-slate-400">of ${rawPerformanceData.length} Total</span>
+          </div>
+          <div class="mt-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5">
+            <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${((totalVisible / rawPerformanceData.length) * 100).toFixed(0)}%"></div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm transition">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Avg Attainment %</span>
+            <span class="p-1.5 bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-300 rounded-lg text-xs"><i class="fa-solid fa-percent"></i></span>
+          </div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">${avgAttainment}%</h3>
+            <span class="text-xs ${Number(avgAttainment) >= 100 ? 'text-emerald-500' : 'text-slate-400'} font-medium">Benchmark</span>
+          </div>
+          <div class="mt-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5">
+            <div class="bg-amber-500 h-1.5 rounded-full" style="width: ${Math.min(Number(avgAttainment), 100)}%"></div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm transition cursor-pointer hover:border-emerald-400" onclick="quickFilterStatus('EXCEEDED')">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase">Exceeded (&gt;105%)</span>
+            <span class="p-1.5 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 rounded-lg text-xs"><i class="fa-solid fa-circle-check"></i></span>
+          </div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">${countExceeded}</h3>
+            <span class="text-xs text-slate-400">Measures</span>
+          </div>
+          <div class="mt-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5">
+            <div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${totalVisible ? ((countExceeded / totalVisible) * 100).toFixed(0) : 0}%"></div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm transition cursor-pointer hover:border-blue-400" onclick="quickFilterStatus('MET')">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase">On Target (95-105%)</span>
+            <span class="p-1.5 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 rounded-lg text-xs"><i class="fa-solid fa-bullseye"></i></span>
+          </div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <h3 class="text-2xl font-bold text-blue-600 dark:text-blue-400">${countMet}</h3>
+            <span class="text-xs text-slate-400">Measures</span>
+          </div>
+          <div class="mt-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5">
+            <div class="bg-blue-500 h-1.5 rounded-full" style="width: ${totalVisible ? ((countMet / totalVisible) * 100).toFixed(0) : 0}%"></div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm transition cursor-pointer hover:border-rose-400" onclick="quickFilterStatus('BELOW')">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-semibold text-rose-600 dark:text-rose-400 uppercase">Below (&lt;95%)</span>
+            <span class="p-1.5 bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-300 rounded-lg text-xs"><i class="fa-solid fa-triangle-exclamation"></i></span>
+          </div>
+          <div class="mt-2 flex items-baseline gap-2">
+            <h3 class="text-2xl font-bold text-rose-600 dark:text-rose-400">${countBelow}</h3>
+            <span class="text-xs text-slate-400">Variances</span>
+          </div>
+          <div class="mt-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5">
+            <div class="bg-rose-500 h-1.5 rounded-full" style="width: ${totalVisible ? ((countBelow / totalVisible) * 100).toFixed(0) : 0}%"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function quickFilterStatus(statusVal) {
+      const statusSelect = document.getElementById('statusFilter');
+      if (statusSelect) {
+        statusSelect.value = statusVal;
+        filterState.status = statusVal;
+        runFilterPipeline();
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('performanceTableBody');
+      const emptyState = document.getElementById('tableEmptyState');
+      const visibleCount = document.getElementById('visibleRowCount');
+      const totalCount = document.getElementById('totalRowCount');
+      const filterSummary = document.getElementById('tableFilterSummary');
+
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+      totalCount.textContent = rawPerformanceData.length;
+      visibleCount.textContent = filteredRecords.length;
+      filterSummary.textContent = `Displaying ${filteredRecords.length} records matching current criteria`;
+
+      if (filteredRecords.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      filteredRecords.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/60 transition group cursor-pointer border-b border-slate-100 dark:border-slate-800/80";
+        tr.onclick = () => openDetailModal(item.id);
+
+        const isPercentageMetric = item.measureName.includes('%');
+
+        let quartersCell = '';
+        if (item.quarters.q1 !== null) {
+          quartersCell = `
+            <div class="flex items-center justify-center gap-1 font-mono text-[10px]">
+              <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" title="Q1: ${formatNumber(item.quarters.q1)}">Q1: ${formatNumber(item.quarters.q1)}</span>
+              <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" title="Q2: ${formatNumber(item.quarters.q2)}">Q2: ${formatNumber(item.quarters.q2)}</span>
+              ${item.quarters.q3 !== null ? `<span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" title="Q3: ${formatNumber(item.quarters.q3)}">Q3: ${formatNumber(item.quarters.q3)}</span>` : ''}
+              ${item.quarters.q4 !== null ? `<span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" title="Q4: ${formatNumber(item.quarters.q4)}">Q4: ${formatNumber(item.quarters.q4)}</span>` : ''}
+            </div>
+          `;
+        } else {
+          quartersCell = `<span class="text-slate-400 text-[11px] italic">Annual Close Only</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-3.5 text-center font-bold text-slate-800 dark:text-slate-200">
+            <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono">
+              FY${item.fy.toString().slice(-2)}
+            </span>
+          </td>
+          <td class="py-3 px-3.5 text-slate-600 dark:text-slate-400 font-mono text-[11px]">
+            ${item.strategyCode}
+          </td>
+          <td class="py-3 px-3.5">
+            <div class="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+              <span>${item.measureName}</span>
+              ${item.percent < 95 ? '<span class="text-rose-500 font-bold" title="Varies >5% from target">*</span>' : ''}
+            </div>
+            <div class="text-[11px] text-slate-400 mt-0.5">
+              ${item.strategyName}
+            </div>
+          </td>
+          <td class="py-3 px-3.5 text-center">
+            <span class="text-[10px] font-semibold uppercase px-2 py-0.5 rounded ${
+              item.type === 'Outcome' 
+                ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800' 
+                : (item.type === 'Efficiency'
+                   ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                   : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300')
+            }">
+              ${item.type}
+            </span>
+          </td>
+          <td class="py-3 px-3.5 text-right font-mono font-medium text-slate-600 dark:text-slate-400">
+            ${isPercentageMetric ? item.target.toFixed(2) + '%' : formatNumber(item.target)}
+          </td>
+          <td class="py-3 px-2 text-center">
+            ${quartersCell}
+          </td>
+          <td class="py-3 px-3.5 text-right font-mono font-bold text-slate-900 dark:text-white">
+            ${isPercentageMetric ? item.actual.toFixed(2) + '%' : formatNumber(item.actual)}
+          </td>
+          <td class="py-3 px-3.5 text-center font-mono font-bold">
+            <span class="${item.percent > 105 ? 'text-emerald-600 dark:text-emerald-400' : (item.percent >= 95 ? 'text-blue-600 dark:text-blue-400' : 'text-rose-600 dark:text-rose-400')}">
+              ${item.percent.toFixed(2)}%
+            </span>
+          </td>
+          <td class="py-3 px-3.5 text-center">
+            ${getStatusBadge(item.percent)}
+          </td>
+          <td class="py-3 px-3.5 text-center no-print">
+            <button type="button" class="px-2.5 py-1 text-[11px] bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800 font-medium transition flex items-center justify-center gap-1 mx-auto" onclick="event.stopPropagation(); openDetailModal('${item.id}')">
+              <i class="fa-solid fa-file-lines text-xs"></i> View
+            </button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openDetailModal(id) {
+      const item = rawPerformanceData.find(d => d.id === id);
+      if (!item) return;
+
+      const modal = document.getElementById('explanationModal');
+      document.getElementById('modalTitle').textContent = item.measureName;
+      document.getElementById('modalFiscalYear').textContent = `State Fiscal Year ${item.fy} • Legislative Session Performance`;
+      document.getElementById('modalStrategyBadge').textContent = `${item.strategyCode} ${item.strategyName}`;
+      
+      const isPercent = item.measureName.includes('%');
+      document.getElementById('modalTargetVal').textContent = isPercent ? item.target.toFixed(2) + '%' : formatNumber(item.target);
+      document.getElementById('modalActualVal').textContent = isPercent ? item.actual.toFixed(2) + '%' : formatNumber(item.actual);
+      
+      const pctEl = document.getElementById('modalPercentVal');
+      pctEl.textContent = item.percent.toFixed(2) + '%';
+      pctEl.className = item.percent > 105 ? "text-sm font-bold text-emerald-600 dark:text-emerald-400" : (item.percent >= 95 ? "text-sm font-bold text-blue-600 dark:text-blue-400" : "text-sm font-bold text-rose-600 dark:text-rose-400");
+
+      const qGrid = document.getElementById('modalQuartersGrid');
+      qGrid.innerHTML = '';
+      if (item.quarters.q1 !== null) {
+        ['q1', 'q2', 'q3', 'q4'].forEach((qKey, index) => {
+          const val = item.quarters[qKey];
+          const div = document.createElement('div');
+          div.className = "p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700";
+          div.innerHTML = `
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Quarter ${index + 1}</div>
+            <div class="font-bold text-slate-800 dark:text-slate-100 text-xs mt-0.5">${val !== null ? formatNumber(val) : '—'}</div>
+          `;
+          qGrid.appendChild(div);
+        });
+      } else {
+        qGrid.innerHTML = `<div class="col-span-4 text-center py-2 text-slate-400 italic">This outcome/annual metric was submitted during final legislative year-end reconciliation.</div>`;
+      }
+
+      document.getElementById('modalExplanationContent').textContent = item.explanation || "No variance explanation recorded for this measure.";
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('explanationModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    /* ====================================================================
+       5. CHARTS CONFIGURATION & TREND VISUALIZATIONS (12-YEAR SPAN)
+       ==================================================================== */
+    function updateLongitudinalChart() {
+      const canvas = document.getElementById('longitudinalChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const isDark = document.documentElement.classList.contains('dark');
+      const metric = document.getElementById('trendMetricSelector')?.value || 'ACTIVE_CASES';
+
+      const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
+      let datasets = [];
+
+      if (metric === 'ACTIVE_CASES') {
+        const rows = years.map(yr => rawPerformanceData.find(d => d.fy === yr && d.measureName.includes("Active VA Benefit Cases")));
+        datasets = [
+          {
+            label: 'Actual Active Caseload',
+            data: rows.map(r => r ? r.actual : null),
+            borderColor: '#6366f1',
+            backgroundColor: isDark ? 'rgba(99, 102, 241, 0.25)' : 'rgba(99, 102, 241, 0.1)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 3,
+            pointRadius: 5
+          },
+          {
+            label: 'Legislative Target',
+            data: rows.map(r => r ? r.target : null),
+            borderColor: '#d97706',
+            borderDash: [6, 4],
+            tension: 0.2,
+            borderWidth: 2,
+            pointRadius: 4,
+            fill: false
+          }
+        ];
+      } else if (metric === 'MONETARY_AWARDS') {
+        const rows = years.map(yr => rawPerformanceData.find(d => d.fy === yr && d.measureName.includes("Monetary Awards") && d.measureName.includes("SC")));
+        datasets = [
+          {
+            label: 'Monetary Awards to SC Vets ($ Millions)',
+            data: rows.map(r => r ? r.actual : null),
+            borderColor: '#10b981',
+            backgroundColor: isDark ? 'rgba(16, 185, 129, 0.25)' : 'rgba(16, 185, 129, 0.1)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 3,
+            pointRadius: 5
+          },
+          {
+            label: 'Target ($ Millions)',
+            data: rows.map(r => r ? r.target : null),
+            borderColor: '#f59e0b',
+            borderDash: [5, 5],
+            borderWidth: 2,
+            pointRadius: 4,
+            fill: false
+          }
+        ];
+      } else if (metric === 'CLAIMS') {
+        const rows = years.map(yr => rawPerformanceData.find(d => d.fy === yr && d.measureName.startsWith("Claims Filed")));
+        datasets = [
+          {
+            label: 'Actual Claims Filed',
+            data: rows.map(r => r ? r.actual : null),
+            borderColor: '#2563eb',
+            backgroundColor: isDark ? 'rgba(37, 99, 235, 0.25)' : 'rgba(37, 99, 235, 0.1)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 3,
+            pointRadius: 5
+          },
+          {
+            label: 'Legislative Target (Recalibrated in FY26)',
+            data: rows.map(r => r ? r.target : null),
+            borderColor: '#f59e0b',
+            borderDash: [6, 4],
+            tension: 0.2,
+            borderWidth: 2,
+            pointRadius: 4,
+            fill: false
+          }
+        ];
+      } else if (metric === 'APPEALS') {
+        const rows = years.map(yr => rawPerformanceData.find(d => d.fy === yr && d.measureName.includes("Appealed")));
+        datasets = [
+          {
+            label: 'Decisions Appealed (Actual)',
+            data: rows.map(r => r ? r.actual : null),
+            borderColor: '#ef4444',
+            backgroundColor: isDark ? 'rgba(239, 68, 68, 0.25)' : 'rgba(239, 68, 68, 0.1)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 3,
+            pointRadius: 5
+          },
+          {
+            label: 'Target',
+            data: rows.map(r => r ? r.target : null),
+            borderColor: '#94a3b8',
+            borderDash: [5, 5],
+            borderWidth: 2,
+            pointRadius: 4,
+            fill: false
+          }
+        ];
+      } else if (metric === 'STRIKE_FORCE') {
+        const rows = years.map(yr => rawPerformanceData.find(d => d.fy === yr && (d.measureName.includes("Strike Force") || d.measureName.includes("Decisions Reviewed")) && d.type === "Output"));
+        datasets = [
+          {
+            label: 'Strike Force Reviews (Actual)',
+            data: rows.map(r => r ? r.actual : null),
+            borderColor: '#8b5cf6',
+            backgroundColor: isDark ? 'rgba(139, 92, 246, 0.25)' : 'rgba(139, 92, 246, 0.1)',
+            fill: true,
+            borderWidth: 3,
+            pointRadius: 5
+          },
+          {
+            label: 'Target (Recalibrated in FY26)',
+            data: rows.map(r => r ? r.target : null),
+            borderColor: '#f59e0b',
+            borderDash: [5, 5],
+            borderWidth: 2,
+            pointRadius: 4,
+            fill: false
+          }
+        ];
+      } else if (metric === 'ALL_VARIANCE') {
+        const claimsPct = years.map(yr => {
+          const r = rawPerformanceData.find(d => d.fy === yr && d.measureName.startsWith("Claims Filed"));
+          return r ? r.percent : null;
+        });
+        const activePct = years.map(yr => {
+          const r = rawPerformanceData.find(d => d.fy === yr && d.measureName.includes("Active VA Benefit Cases"));
+          return r ? r.percent : null;
+        });
+        const appealsPct = years.map(yr => {
+          const r = rawPerformanceData.find(d => d.fy === yr && d.measureName.includes("Appealed"));
+          return r ? r.percent : null;
+        });
+        
+        datasets = [
+          {
+            label: 'Claims Filed %',
+            data: claimsPct,
+            borderColor: '#2563eb',
+            borderWidth: 2.5,
+            tension: 0.3
+          },
+          {
+            label: 'Active Caseload %',
+            data: activePct,
+            borderColor: '#10b981',
+            borderWidth: 2.5,
+            tension: 0.3
+          },
+          {
+            label: 'Decisions Appealed %',
+            data: appealsPct,
+            borderColor: '#ef4444',
+            borderWidth: 2.5,
+            tension: 0.3
+          }
+        ];
+      }
+
+      if (longitudinalChartInstance) {
+        longitudinalChartInstance.destroy();
+      }
+
+      longitudinalChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: years.map(y => `FY${y.toString().slice(-2)}`),
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                boxWidth: 12,
+                font: { size: 11 }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let val = context.parsed.y;
+                  if (val === null || val === undefined) return `${context.dataset.label}: N/A`;
+                  if (metric === 'ALL_VARIANCE') return `${context.dataset.label}: ${val.toFixed(2)}%`;
+                  if (metric === 'MONETARY_AWARDS') return `${context.dataset.label}: $${Number(val).toLocaleString()}M`;
+                  return `${context.dataset.label}: ${Number(val).toLocaleString()}`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              grid: {
+                color: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'
+              },
+              ticks: {
+                callback: function(val) {
+                  if (metric === 'ALL_VARIANCE') return val + '%';
+                  if (metric === 'MONETARY_AWARDS') return '$' + (val >= 1000 ? (val/1000).toFixed(1) + 'B' : val + 'M');
+                  return val >= 1000 ? (val / 1000) + 'k' : val;
+                }
+              }
+            },
+            x: {
+              grid: {
+                color: isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateQuarterlyChart() {
+      const canvas = document.getElementById('quarterlyChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const isDark = document.documentElement.classList.contains('dark');
+      const yearSelect = document.getElementById('quarterlyYearSelect');
+      const fy = parseInt(yearSelect ? yearSelect.value : 2026);
+
+      const claimsRow = rawPerformanceData.find(d => d.fy === fy && d.measureName.startsWith("Claims Filed"));
+      const appealsRow = rawPerformanceData.find(d => d.fy === fy && d.measureName.includes("Appealed"));
+      const strikeRow = rawPerformanceData.find(d => d.fy === fy && (d.measureName.includes("Strike Force") || d.measureName.includes("Decisions Reviewed")) && d.type === "Output");
+
+      document.getElementById('quarterlySubTitle').textContent = `Volume by Quarter: FY ${fy}`;
+      const insight = document.getElementById('quarterlyDynamicInsight');
+
+      if (fy === 2026) {
+        insight.innerHTML = `<strong>Recalibration & PACT Climax:</strong> Claims quarterly run rates stabilized at 12k–14.4k, exceeding recalibrated 45k target (119.9%). Monetary awards reached $9.45B.`;
+      } else if (fy === 2025) {
+        insight.innerHTML = `<strong>Customer Satisfaction & PACT Wave:</strong> Customer satisfaction hit 98%, active cases reached 348k, and awards surpassed $8.8B.`;
+      } else if (fy === 2024) {
+        insight.innerHTML = `<strong>VetPro Form Counting:</strong> Steady quarterly claims form velocity (10.6k - 12k), while active caseload climbed past 328k under PACT Act presumptions.`;
+      } else if (fy === 2023) {
+        insight.innerHTML = `<strong>Methodology Transition:</strong> Switch from counting issues to forms reduced reported numbers to 11k/quarter, while AMA appeals peaked at 18,590.`;
+      } else if (fy === 2022) {
+        insight.innerHTML = `<strong>Prelude to PACT Act:</strong> High monetary recovery ($4.67B) and strong output (103k claims), with CMS software transition in late Q4.`;
+      } else if (fy === 2021) {
+        insight.innerHTML = `<strong>Post-COVID Reconstitution:</strong> Quarterly claims climbed from 20.1k (Q1) to 24.6k (Q4) via MS Bookings and virtual outreach.`;
+      } else if (fy === 2020) {
+        insight.innerHTML = `<strong>COVID-19 Disruption:</strong> Strong Q1/Q2 (~32k) cut down in Q3 (15,285) as state offices closed to in-person operations.`;
+      } else if (fy === 2019) {
+        insight.innerHTML = `<strong>Historical High:</strong> All four quarters posted ~40k+ claims, achieving 166,490 total claims filed.`;
+      } else {
+        insight.innerHTML = `<strong>Stable Performance:</strong> Consistent quarterly execution across field offices and regional teams.`;
+      }
+
+      const qClaims = claimsRow ? [claimsRow.quarters.q1, claimsRow.quarters.q2, claimsRow.quarters.q3, claimsRow.quarters.q4] : [0,0,0,0];
+      const qSecondary = appealsRow 
+        ? [appealsRow.quarters.q1, appealsRow.quarters.q2, appealsRow.quarters.q3, appealsRow.quarters.q4]
+        : (strikeRow ? [strikeRow.quarters.q1, strikeRow.quarters.q2, strikeRow.quarters.q3, strikeRow.quarters.q4] : [0,0,0,0]);
+      const secondaryLabel = appealsRow ? 'Decisions Appealed' : 'Strike Force Reviews';
+
+      if (quarterlyChartInstance) {
+        quarterlyChartInstance.destroy();
+      }
+
+      quarterlyChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4'],
+          datasets: [
+            {
+              label: 'Claims Filed',
+              data: qClaims,
+              backgroundColor: '#1d4ed8',
+              borderRadius: 6,
+              barPercentage: 0.65
+            },
+            {
+              label: secondaryLabel,
+              data: qSecondary,
+              backgroundColor: '#f59e0b',
+              borderRadius: 6,
+              barPercentage: 0.65
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { boxWidth: 10, font: { size: 11 } }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(c) {
+                  return `${c.dataset.label}: ${c.parsed.y !== null ? Number(c.parsed.y).toLocaleString() : 'N/A'}`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'
+              },
+              ticks: {
+                callback: function(v) {
+                  return v >= 1000 ? (v / 1000) + 'k' : v;
+                }
+              }
+            },
+            x: {
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    function exportToCSV() {
+      const headers = ["Fiscal Year", "Strategy Code", "Strategy Name", "Measure Name", "Type", "Target", "Q1", "Q2", "Q3", "Q4", "Final Actual", "% Target", "Status", "Variance Explanation"];
+      
+      const rows = filteredRecords.map(d => [
+        `FY${d.fy}`,
+        `"${d.strategyCode}"`,
+        `"${d.strategyName.replace(/"/g, '""')}"`,
+        `"${d.measureName.replace(/"/g, '""')}"`,
+        d.type,
+        d.target,
+        d.quarters.q1 ?? "",
+        d.quarters.q2 ?? "",
+        d.quarters.q3 ?? "",
+        d.quarters.q4 ?? "",
+        d.actual,
+        d.percent + "%",
+        d.status,
+        `"${d.explanation.replace(/\n/g, ' ').replace(/"/g, '""')}"`
+      ]);
+
+      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `TVC_ABEST_Performance_FY2015_2026_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function bindAllControls() {
+      const searchInput = document.getElementById('globalSearchInput');
+      const clearSearchBtn = document.getElementById('clearSearchBtn');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          filterState.searchQuery = e.target.value;
+          if (clearSearchBtn) {
+            clearSearchBtn.classList.toggle('hidden', e.target.value.length === 0);
+          }
+          runFilterPipeline();
+        });
+      }
+
+      if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', () => {
+          if (searchInput) searchInput.value = '';
+          filterState.searchQuery = '';
+          clearSearchBtn.classList.add('hidden');
+          runFilterPipeline();
+        });
+      }
+
+      const fyFilter = document.getElementById('fyFilter');
+      if (fyFilter) {
+        fyFilter.addEventListener('change', (e) => {
+          filterState.fy = e.target.value;
+          runFilterPipeline();
+        });
+      }
+
+      const strategyFilter = document.getElementById('strategyFilter');
+      if (strategyFilter) {
+        strategyFilter.addEventListener('change', (e) => {
+          filterState.strategy = e.target.value;
+          runFilterPipeline();
+        });
+      }
+
+      const typeFilter = document.getElementById('typeFilter');
+      if (typeFilter) {
+        typeFilter.addEventListener('change', (e) => {
+          filterState.type = e.target.value;
+          runFilterPipeline();
+        });
+      }
+
+      const statusFilter = document.getElementById('statusFilter');
+      if (statusFilter) {
+        statusFilter.addEventListener('change', (e) => {
+          filterState.status = e.target.value;
+          runFilterPipeline();
+        });
+      }
+
+      const sortSelect = document.getElementById('tableSortSelect');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+          filterState.sortBy = e.target.value;
+          runFilterPipeline();
+        });
+      }
+
+      const resetAll = () => {
+        filterState.searchQuery = '';
+        filterState.fy = 'ALL';
+        filterState.strategy = 'ALL';
+        filterState.type = 'ALL';
+        filterState.status = 'ALL';
+        filterState.sortBy = 'year-desc';
+
+        if (searchInput) searchInput.value = '';
+        if (clearSearchBtn) clearSearchBtn.classList.add('hidden');
+        if (fyFilter) fyFilter.value = 'ALL';
+        if (strategyFilter) strategyFilter.value = 'ALL';
+        if (typeFilter) typeFilter.value = 'ALL';
+        if (statusFilter) statusFilter.value = 'ALL';
+        if (sortSelect) sortSelect.value = 'year-desc';
+
+        runFilterPipeline();
+      };
+
+      const resetBtn = document.getElementById('resetFiltersBtn');
+      if (resetBtn) resetBtn.addEventListener('click', resetAll);
+      const emptyStateReset = document.getElementById('emptyStateResetBtn');
+      if (emptyStateReset) emptyStateReset.addEventListener('click', resetAll);
+
+      document.querySelectorAll('.preset-tag').forEach(tag => {
+        tag.addEventListener('click', () => {
+          const type = tag.getAttribute('data-type');
+          const val = tag.getAttribute('data-value');
+
+          if (type === 'query') {
+            if (searchInput) searchInput.value = val;
+            filterState.searchQuery = val;
+            if (clearSearchBtn) clearSearchBtn.classList.remove('hidden');
+          } else if (type === 'status') {
+            if (statusFilter) statusFilter.value = val;
+            filterState.status = val;
+          }
+          runFilterPipeline();
+        });
+      });
+
+      const trendMetricSelector = document.getElementById('trendMetricSelector');
+      if (trendMetricSelector) {
+        trendMetricSelector.addEventListener('change', updateLongitudinalChart);
+      }
+
+      const quarterlyYearSelect = document.getElementById('quarterlyYearSelect');
+      if (quarterlyYearSelect) {
+        quarterlyYearSelect.addEventListener('change', updateQuarterlyChart);
+      }
+
+      const exportBtn = document.getElementById('exportCsvBtn');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', exportToCSV);
+      }
+
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+      const modalDismissBtn = document.getElementById('modalDismissBtn');
+      if (modalDismissBtn) modalDismissBtn.addEventListener('click', closeModal);
+
+      const explanationModal = document.getElementById('explanationModal');
+      if (explanationModal) {
+        explanationModal.addEventListener('click', (e) => {
+          if (e.target === explanationModal) closeModal();
+        });
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+      });
+
+      const themeBtn = document.getElementById('themeToggleBtn');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          const isDark = document.documentElement.classList.toggle('dark');
+          const themeIcon = document.getElementById('themeIcon');
+          const themeLabel = document.getElementById('themeLabel');
+          if (isDark) {
+            if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-300";
+            if (themeLabel) themeLabel.textContent = "Light";
+          } else {
+            if (themeIcon) themeIcon.className = "fa-solid fa-moon text-amber-300";
+            if (themeLabel) themeLabel.textContent = "Dark";
+          }
+          updateLongitudinalChart();
+          updateQuarterlyChart();
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      Chart.defaults.font.family = 'Inter, sans-serif';
+      bindAllControls();
+      runFilterPipeline();
+    });
+  </script>
+</body>
+</html>
